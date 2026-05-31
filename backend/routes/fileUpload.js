@@ -13,16 +13,52 @@ router.post('/', upload.single('file'), (req, res) => {
   if (!excelFile) {
     return res.status(400).json({ error: 'No file uploaded' });
   }  
-  res.send();
-
   const sheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[sheetName];
   const data = XLSX.utils.sheet_to_json(worksheet);
-  res.send('Data received successfully',data);
+  const rows = XLSX.utils.sheet_to_json(worksheet, {
+  header: 1
+});
 
-//const schoolName = worksheet['B1'].v;
-//const term = worksheet['B2'].v;
-//const teacher = value.split(':')[1].trim();
+
+  const classDetails = {
+    classTeacher: rows[0][1] || 'No cell found',
+    class: rows[0][2] || 'No cell found',
+    subject: rows[0][3] || 'No cell found',
+    term: rows[0][4] || 'No cell found'
+  };
+
+  const headerRowIndex = rows.findIndex(row =>
+     row.includes('Name') && row.includes('Final')
+  );
+
+  const headers = rows[headerRowIndex];
+  const nameColumn = headers.indexOf('Name');
+  const finalColumn = headers.indexOf('Final');
+
+  const students = [];
+
+  for (let i = headerRowIndex + 1; i < rows.length; i++) {
+    const row = rows[i];
+
+    if (!row[nameColumn] || row[nameColumn] === 'TOTAL') {
+      continue;
+    }
+
+    students.push({
+      name: row[nameColumn],
+      final: row[finalColumn]
+    });
+  }
+  const formatedStudents = students.map(student => ({
+    name: student.name,
+    final: Math.round(student.final)
+  }));
+
+
+
+  res.send(formatedStudents);
+
 
 });
 
