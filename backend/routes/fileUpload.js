@@ -57,7 +57,7 @@ router.post('/', upload.single('file'), (req, res) => {
 
 
 
-  res.send(formatedStudents);
+  res.send(students);
 
 
 });
