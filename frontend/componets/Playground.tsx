@@ -1,9 +1,27 @@
-import React from 'react'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
 
-const Playgroud = () => {
+interface ReportData {
+  classTeacher: string;
+  studentName: string;
+  studentClass: string;
+  monthYear: string;
+  subject: string;
+  assessmentMark: string;
+  comment: string;
+}
+
+const Playground =  () => {
+
+     const [pdfData, setPdfData] = useState<ReportData[]>([]);
+     useEffect(() => {   
+     axios.get('http://localhost:1738/reports')
+      .then(res=> setPdfData(res.data))}, [])
   return (
+    
     <>
-      <div className="report-container">
+        {pdfData.map((data, index) => (
+          <div key={index} className="report-container">
 
           <h1 className="school-name">ZRP HIGH SCHOOL</h1>
 
@@ -28,17 +46,17 @@ const Playgroud = () => {
           <div className="student-details">
               <div className="row">
                   <span>STUDENT NAME:</span>
-                  <span>Tafadzwa Mugoni</span>
+                  <span>{data.studentName}</span>
               </div>
 
               <div className="row">
                   <span>FORM: FOUR (4)</span>
-                  <span>MONTH/YEAR: APRIL/2026</span>
+                  <span>MONTH/YEAR: {data.monthYear}</span>
               </div>
 
               <div className="row">
-                  <span>SUBJECT: BIOLOGY</span>
-                  <span>ASSESSMENT MARK: 64%</span>
+                  <span>SUBJECT: {data.subject}</span>
+                  <span>ASSESSMENT MARK: {data.assessmentMark}%</span>
               </div>
           </div>
 
@@ -46,8 +64,7 @@ const Playgroud = () => {
               <h3>COMMENT</h3>
 
               <p>
-                  The student performs better when paying attention.
-                  Please advise to read more and study past exam papers.
+                {data.comment}
               </p>
           </div>
 
@@ -55,7 +72,7 @@ const Playgroud = () => {
 
               <div className="tutor-section">
                   <p>TUTORS NAME</p>
-                  <p>MR MUGONI</p>
+                  <p>{data.classTeacher}</p>
 
                   <div className="signature-area">
                       ............................................
@@ -81,8 +98,9 @@ const Playgroud = () => {
               <span>Official school stamp</span>
           </div>
 
-      </div>
+      </div>))}
     </>
-)}
-
-export default Playgroud
+    
+    )
+}
+export default Playground

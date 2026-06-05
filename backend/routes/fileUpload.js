@@ -6,6 +6,7 @@ const pdfGenerater = require('../functions/pdfGenerater');
 
 
 const upload = multer({ dest: 'uploads/' });
+let reports = [];
 
 router.post('/', upload.single('file'), (req, res) => {
   const excelFile = req.file;
@@ -23,9 +24,9 @@ router.post('/', upload.single('file'), (req, res) => {
 
   const classDetails = {
     classTeacher: rows[0][1] || 'No cell found',
-    class: rows[0][2] || 'No cell found',
-    subject: rows[0][3] || 'No cell found',
-    term: rows[0][4] || 'No cell found'
+    class: rows[1][1] || 'No cell found',
+    subject: rows[2][1] || 'No cell found',
+    term: rows[3][1] || 'No cell found'
   };
 
   const headerRowIndex = rows.findIndex(row =>
@@ -54,12 +55,26 @@ router.post('/', upload.single('file'), (req, res) => {
     name: student.name,
     final: Math.round(student.final)
   }));
+ 
+  const reports = students.map(student => ({
+  classTeacher: classDetails.classTeacher,
+  studentClass: classDetails.class,
+  subject: classDetails.subject,
+  monthYear: classDetails.term,
+  studentName: student.name,
+  assessmentMark: student.final,
+  comment: 'This is a comment'
+}));
 
 
-
-  res.send(students);
+  res.send(reports);
 
 
 });
 
+
+router.get('/reports', (req, res) => {
+  res.json(reports);
+}
+);
 module.exports = router;

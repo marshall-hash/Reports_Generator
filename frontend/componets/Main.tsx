@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../src/App"
 
@@ -15,11 +15,13 @@ function Main() {
     const formData = new FormData();
     formData.append('file', selectedFile);
 
-    await axios.post('http://localhost:1738/upload', formData);
-  }
-  const gotoPlayground = () => {
+    await axios.post('http://localhost:1738/upload', formData)
+      .then(res => console.log(res.data))
+    await axios.get('http://localhost:1738/upload/reports')
+      .then(res => console.log(res.data));
     navigate('/playground');
   }
+ 
   return (
     < div className="App-container">
       <h1>Welcome to the ZRP High School Vacation Reports Generator</h1>
@@ -43,9 +45,11 @@ function Main() {
         }}
       />
       <button onClick={handleFileUpload}>Generate Reports</button>
-      <button onClick={gotoPlayground}>Go to playground</button>
+   
     </div>
   );
 }
 
 export default Main;
+
+
