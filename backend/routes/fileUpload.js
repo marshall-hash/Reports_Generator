@@ -56,7 +56,7 @@ router.post('/', upload.single('file'), (req, res) => {
     final: Math.round(student.final)
   }));
  
-  const reports = students.map(student => ({
+  reports = students.map(student => ({
   classTeacher: classDetails.classTeacher,
   studentClass: classDetails.class,
   subject: classDetails.subject,
@@ -64,7 +64,7 @@ router.post('/', upload.single('file'), (req, res) => {
   studentName: student.name,
   assessmentMark: student.final,
   comment: 'This is a comment'
-}));
+  }));
 
 
   res.send(reports);
@@ -74,7 +74,7 @@ router.post('/', upload.single('file'), (req, res) => {
 
 
 router.get('/reports', (req, res) => {
-  res.json(reports);
+  res.send(reports);
 }
 );
 module.exports = router;
