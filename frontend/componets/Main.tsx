@@ -10,16 +10,12 @@ function Main() {
   const navigate = useNavigate();
 
   const handleFileUpload = async () => {
+    
     if (!selectedFile) return;
-
     const formData = new FormData();
     formData.append('file', selectedFile);
-
-    await axios.post('http://localhost:1738/upload', formData)
-      .then(res => console.log(res.data))
-    await axios.get('http://localhost:1738/upload/reports')
-      .then(res => console.log(res.data));
-    navigate('/playground');
+    const reports = await axios.post('http://localhost:1738/upload', formData);
+    navigate('/playground', {state: {reports: reports.data}});
   }
  
   return (

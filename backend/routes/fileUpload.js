@@ -2,18 +2,25 @@ const express = require('express');
 const router = express.Router();
 const XLSX = require('xlsx');
 const multer = require('multer');
-const pdfGenerater = require('../functions/pdfGenerater');
+
 
 
 const upload = multer({ dest: 'uploads/' });
 let reports = [];
 
 router.post('/', upload.single('file'), (req, res) => {
-  const excelFile = req.file;
+   try {
+    console.log('File:', req.file);
+
+    if (!req.file) {
+      return res.status(400).json({
+        error: 'No file uploaded'
+      });
+    }
+    
+  
+  
   const workbook = XLSX.readFile(req.file.path);
-  if (!excelFile) {
-    return res.status(400).json({ error: 'No file uploaded' });
-  }  
   const sheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[sheetName];
   const data = XLSX.utils.sheet_to_json(worksheet);
@@ -62,19 +69,26 @@ router.post('/', upload.single('file'), (req, res) => {
   subject: classDetails.subject,
   monthYear: classDetails.term,
   studentName: student.name,
-  assessmentMark: student.final,
+  assessmentMark: Math.round(student.final),
   comment: 'This is a comment'
   }));
 
 
-  res.send(reports);
+  res.status(200).json(reports);
 
 
-});
+}
+catch (error) {
+    console.error('UPLOAD ERROR:', error);
+    res.status(500).json({
+      error: error.message
+    });
 
-
+  }});
 router.get('/reports', (req, res) => {
   res.send(reports);
 }
 );
+
+
 module.exports = router;
