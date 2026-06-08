@@ -1,7 +1,6 @@
 
 import { useLocation } from 'react-router-dom'
 import "../src/App"
-import "../src/playground.css"
 import {  useEffect, useState } from 'react'
 
 interface ReportData {
