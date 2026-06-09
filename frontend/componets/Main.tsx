@@ -17,7 +17,28 @@ function Main() {
     const reports = await axios.post('http://localhost:1738/upload', formData);
     navigate('/playground', {state: {reports: reports.data}});
   }
- 
+  const downloadReport = async () => {
+    
+    try {
+      
+      const response = await axios.get('http://localhost:1738/reports', {
+        responseType: 'blob'
+      });
+       const url = window.URL.createObjectURL(response.data);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'report.pdf';
+
+      document.body.appendChild(link);
+      link.click();
+
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Error downloading report:', error);
+      }
+  }
   return (
     < div className="App-container">
       <h1>Welcome to the ZRP High School Vacation Reports Generator</h1>
@@ -41,6 +62,7 @@ function Main() {
         }}
       />
       <button onClick={handleFileUpload}>Generate Reports</button>
+      <button onClick={downloadReport}>Download Report</button>
    
     </div>
   );
