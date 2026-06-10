@@ -1,46 +1,90 @@
 import axios from "axios";
 import  { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import "../src/App"
 
 
 
 function Main() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+   const downloadReport = async () => {
+      try {
+        const response = await axios.get(
+          'http://localhost:1738/reports/download',
+          {
+            responseType: 'blob',
+          }
+        );
 
-  const handleFileUpload = async () => {
-    
-    if (!selectedFile) return;
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    const reports = await axios.post('http://localhost:1738/upload', formData);
-    navigate('/playground', {state: {reports: reports.data}});
-  }
-  const downloadReport = async () => {
-    
-    try {
-      
-      const response = await axios.get('http://localhost:1738/reports', {
-        responseType: 'blob'
-      });
-       const url = window.URL.createObjectURL(response.data);
+        // FIX: wrap response.data in Blob
+        const blob = new Blob([response.data], {
+          type: 'application/pdf',
+        });
 
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'report.pdf';
+        const url = window.URL.createObjectURL(blob);
 
-      document.body.appendChild(link);
-      link.click();
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'report.pdf';
 
-      link.remove();
-      window.URL.revokeObjectURL(url);
+        document.body.appendChild(link);
+        link.click();
+
+        link.remove();
+        window.URL.revokeObjectURL(url);
+
       } catch (error) {
         console.error('Error downloading report:', error);
       }
+    };
+  const handleFileUpload = async () => {
+  if (!selectedFile) {
+    alert("Please select a file first.");
+    return;
   }
+
+  try {
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    // Upload and generate reports
+    await axios.post(
+      "http://localhost:1738/reports",
+      formData
+    );
+
+    // Download generated report
+    await downloadReport();
+
+  } catch (error: unknown) {
+    console.error('FULL ERROR:', error);
+
+    let errorMessage = 'An unexpected error occurred.';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    alert(errorMessage);
+  } finally {
+    setLoading(false);
+  }
+};
+ 
   return (
+  <>
+    {loading && (
+      <div className="overlay">
+        <div className="popup">
+          <div className="spinner"></div>
+          <p>Please wait while reports are being generated...</p>
+        </div>
+      </div>
+    )}
     < div className="App-container">
+      
       <h1>Welcome to the ZRP High School Vacation Reports Generator</h1>
 
       <p>
@@ -62,9 +106,10 @@ function Main() {
         }}
       />
       <button onClick={handleFileUpload}>Generate Reports</button>
-      <button onClick={downloadReport}>Download Report</button>
+      
    
     </div>
+  </>
   );
 }
 
