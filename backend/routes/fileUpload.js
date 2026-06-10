@@ -12,88 +12,94 @@ const upload = multer({ dest: 'uploads/' });
 let reports = [];
 
 router.post('/', upload.single('file'), async (req, res) => {
-  const getComment = (score)=> {
+  const getComment = (score, studentName) => {
         if (score >= 90){
-          comment = [
+          const comment = [
             "Outstanding performance. Demonstrates exceptional understanding of concepts and consistently produces high-quality work. Keep up the excellent effort.",
-             "An excellent learner who shows remarkable dedication, initiative, and mastery of the subject matter.",
+             `${studentName} is an excellent learner who shows remarkable dedication, initiative, and mastery of the subject matter.`,
               "Consistently exceeds expectations through hard work, commitment, and a positive attitude towards learning.",
-              "Displays exceptional academic ability and maintains an impressive standard of achievement throughout."
+              ` ${studentName} displays exceptional academic ability and maintains an impressive standard of achievement throughout.`
           ]
-          return comment.random();
+          return comment[Math.floor(Math.random() * comment.length)];
         } 
 
         if (score >= 80) {
-          comment = [
+          const comment = [
             "Very good achievement. Shows a strong grasp of the subject matter and works diligently. Continue striving for excellence.",
-            "Works diligently and demonstrates a commendable understanding of the subject matter.",
+            ` ${studentName} works diligently and demonstrates a commendable understanding of the subject matter.`,
             "Produces quality work and consistently performs well in assessments and classroom activities.",
-            "Shows strong commitment to learning and continues to make excellent progress."
+            ` ${studentName} shows strong commitment to learning and continues to make excellent progress.`
           
           ];
-          return comment.random();
+          return comment[Math.floor(Math.random() * comment.length)];
         }
         if (score >= 70){
-          comment = [
+          const comment = [
             "Good performance. Demonstrates a sound understanding of most concepts and participates positively in learning activities.",
-            "Shows steady progress and is encouraged to continue building on current strengths.",
-            "Performs well in most areas and demonstrates a positive attitude towards learning.",
-            "Has achieved a good standard and should continue applying consistent effort."
+            ` ${studentName} shows steady progress and is encouraged to continue building on current strengths.`,
+            ` ${studentName} performs well in most areas and demonstrates a positive attitude towards learning.`,
+            ` ${studentName} has achieved a good standard and should continue applying consistent effort.`
           ]
-          return comment.random();
+          return comment[Math.floor(Math.random() * comment.length)];
         } 
 
         if (score >= 60){
-          comment = [ 
-            "Satisfactory progress. Understands key concepts but should focus on improving consistency and attention to detail.",
-             "Demonstrates an acceptable level of understanding and is encouraged to participate more actively.",
-              "Has achieved satisfactory results and can improve further through additional effort and practice.",
-              "Shows potential and should continue working steadily to strengthen academic performance."
+          const comment = [ 
+            ` ${studentName} demonstrates satisfactory progress. Understands key concepts but should focus on improving consistency and attention to detail.`,
+            ` ${studentName} demonstrates an acceptable level of understanding and is encouraged to participate more actively.`,
+            ` ${studentName} has achieved satisfactory results and can improve further through additional effort and practice.`,
+            ` ${studentName} shows potential and should continue working steadily to strengthen academic performance.`
           ]
-          return comment.random();
+          return comment[Math.floor(Math.random() * comment.length)];
         }
 
         if (score >= 50){
-            comment = [
-              "Fair achievement. Has shown some understanding of the material but requires additional effort and practice to improve performance.",
-             "Needs to apply greater focus and consistency to improve overall performance.",
-              "Demonstrates basic understanding but should practice regularly to strengthen skills.",
-              "Can achieve better results through increased commitment and attention to assigned tasks."
+            const comment = [
+              ` Fair achievement. ${studentName} has shown some understanding of the material but requires additional effort and practice to improve performance.`,
+             `${studentName} needs to apply greater focus and consistency to improve overall performance.`,
+              ` ${studentName} demonstrates basic understanding but should practice regularly to strengthen skills.`,
+              ` ${studentName} can achieve better results through increased commitment and attention to assigned tasks.`
             ]
-            return comment.random();
+            return comment[Math.floor(Math.random() * comment.length)];
         } 
 
         if (score >= 40){
-            comment = [ 
+            const comment = [ 
               "Below average performance. Needs to work harder, complete assignments consistently, and seek assistance when concepts are unclear.",
               "Requires greater effort and participation to improve understanding and achievement.",
-              "Should focus on completing assignments consistently and developing better study habits.",
+              ` ${studentName} should focus on completing assignments consistently and developing better study habits.`,
               "Has the ability to improve but must demonstrate increased commitment to learning."
             ]
-            return comment.random();
+            return comment[Math.floor(Math.random() * comment.length)];
         } 
 
         if (score >= 30){
-          comment = [
+          const comment = [
             "Limited achievement. Significant improvement is needed through increased effort, regular study habits, and active participation in class.",
-             "Struggles to meet expected standards and should seek additional academic support.",
-              "Must develop stronger study habits and participate more actively in learning activities.",
-              "Requires considerable improvement in understanding and application of key concepts."
+             `${studentName} struggles to meet expected standards and should seek additional academic support.`,
+              ` ${studentName} must develop stronger study habits and participate more actively in learning activities.`,
+              ` ${studentName} requires considerable improvement in understanding and application of key concepts.`
           ]
-          return comment.random();
+          return comment[Math.floor(Math.random() * comment.length)];
         } 
 
         if (score >= 20) {
-          comment = [
+          const comment = [
             "Poor performance. Struggles to meet expected standards and requires considerable support and commitment to improve.",
-             "Has not demonstrated sufficient understanding of the subject and requires significant support.",
-              "Needs urgent improvement in study habits, participation, and commitment to learning.",
+             ` ${studentName} has not demonstrated sufficient understanding of the subject and requires significant support.`,
+              ` ${studentName} needs urgent improvement in study habits, participation, and commitment to learning.`,
               "Performance is well below expectations and requires focused attention and assistance."
           ]
-          return comment.random();
+          return comment[Math.floor(Math.random() * comment.length)];
         }
         return "Very poor performance. Has not demonstrated sufficient understanding of the subject. Immediate intervention and increased effort are strongly recommended.";
     }
+const  getFirstName =(fullName) =>{
+  const names = fullName.trim().split(/\s+/);
+  const firstName = names[names.length - 1];
+  return firstName.charAt(0).toUpperCase() +
+         firstName.slice(1).toLowerCase();
+}
   try {
     console.log('File:', req.file);
 
@@ -151,9 +157,12 @@ router.post('/', upload.single('file'), async (req, res) => {
       subject: classDetails.subject,
       monthYear: classDetails.term,
       studentName: student.name,
+      firstName: student.name.split(' ')[0],
       assessmentMark: Math.round(student.final),
-      comment: getComment(Math.round(student.final))
+      comment: getComment(Math.round(student.final),
+       getFirstName(student.name))
     }));
+    
     res.status(200).json({
       message: 'Upload successful',
       students: reports.length
