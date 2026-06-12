@@ -25,13 +25,15 @@ function createWindow() {
 
 app.whenReady().then(() => {
 
-  const backendPath = app.isPackaged
-    ? path.join(process.resourcesPath, 'backend', 'index.js')
-    : path.join(__dirname, 'backend', 'index.js');
+ const backendPath = app.isPackaged
+  ? path.join(process.resourcesPath, "app.asar.unpacked", "backend", "index.js")
+  : path.join(__dirname, "backend", "index.js");
 
   backendProcess = fork(backendPath, [], {
-    silent: true
-  });
+  silent: false,
+  cwd: path.dirname(backendPath)
+});
+
 
   setTimeout(() => {
     createWindow();

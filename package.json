@@ -17,10 +17,10 @@
     "appId": "com.reports.generator",
     "productName": "Reports Generator",
 
-    "files": [
-      "main.js",
-      "frontend/dist/**/*",
-      "package.json"
+     "files": [
+    "frontend/dist/**/*",
+    "backend/**/*",
+    "main.js"
     ],
 
     "extraResources": [
@@ -30,7 +30,10 @@
       }
     ],
 
-    "asar": false,
+    "asar": true,
+    "asarUnpack": [
+      "backend/**"
+    ],
 
     "win": {
       "target": "nsis",
