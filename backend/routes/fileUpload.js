@@ -199,7 +199,7 @@ router.get('/download', async (req, res) => {
                 </div>
 
                 <div class="logo-section">
-                    <img src="http://localhost:1738/assets/Capture.png" alt="School Logo"/>
+                    <img src="http://localhost:1738/assets/Capture.PNG" alt="School Logo"/>
                 </div>
 
                 <div class="right-info">

@@ -1,0 +1,32 @@
+{
+  "name": "reports_generator",
+  "version": "1.0.0",
+  "description": "An app that produces school reports from Excel files",
+  "author": "Tafadzwa Marshall Mugoni",
+  "license": "ISC",
+  "type": "commonjs",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build-react": "cd frontend && npm run build",
+    "dist": "npm run build-react && electron-builder"
+  },
+  "build": {
+    "appId": "com.reports.generator",
+    "productName": "Reports Generator",
+    "files": [
+      "main.js",
+      "backend/**/*",
+      "frontend/dist/**/*",
+      "package.json"
+    ],
+    "asar": false,
+    "win": {
+      "target": "nsis"
+    }
+  },
+  "devDependencies": {
+    "electron": "^42.4.0",
+    "electron-builder": "^26.15.2"
+  }
+}
